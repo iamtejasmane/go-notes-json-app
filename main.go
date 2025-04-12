@@ -1,45 +1,48 @@
 package main
 
 import (
-	"errors"
+	"bufio"
 	"fmt"
+	"os"
+	"strings"
+
+	"github.com/iamtejasmane/go-notes-json-app/note"
 )
 
 func main() {
-	title, content, err := getNoteData()
+	title, content := getNoteData()
 
+	userNote, err := note.New(title, content)
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 		return
 	}
 
-	fmt.Println(title, content)
+	// fmt.Println(userNote)
+	userNote.Display()
 }
 
-func getNoteData() (string, string, error) {
-	title, err := getUserInput("enter note title:")
-	if err != nil {
-		return "", "", err
-	}
+func getNoteData() (string, string) {
+	title := getUserInput("enter note title: ")
+	content := getUserInput("enter note content: ")
 
-	content, err := getUserInput("enter note content")
-	if err != nil {
-		return "", "", err
-	}
-
-	return title, content, nil
+	return title, content
 
 }
 
-func getUserInput(prompt string) (string, error) {
-	fmt.Println(prompt)
-	var value string
-	fmt.Println(&value)
+func getUserInput(prompt string) string {
+	fmt.Print(prompt)
 
-	if value == "" {
-		return "", errors.New("the fileds can not be empty")
+	reader := bufio.NewReader(os.Stdin)
+	text, err := reader.ReadString('\n')
+
+	if err != nil {
+		return ""
 	}
 
-	return value, nil
+	text = strings.TrimSuffix(text, "\n")
+	text = strings.TrimSuffix(text, "\r")
+
+	return text
 
 }
