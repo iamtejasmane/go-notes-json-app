@@ -7,7 +7,12 @@ import (
 	"strings"
 
 	"github.com/iamtejasmane/go-notes-json-app/note"
+	"github.com/iamtejasmane/go-notes-json-app/todo"
 )
+
+type saver interface {
+	Save() error
+}
 
 func main() {
 	title, content := getNoteData()
@@ -18,14 +23,35 @@ func main() {
 		return
 	}
 
-	// fmt.Println(userNote)
-	userNote.Display()
-	err = userNote.Save()
+	text := getTodoData()
+
+	t, err := todo.New(text)
 	if err != nil {
 		fmt.Print(err)
 		return
 	}
-	fmt.Println("File save successfully.")
+	t.Display()
+
+	err = saverData(t)
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+	fmt.Println("ToDo File save successfully.")
+
+	// fmt.Println(userNote)
+	userNote.Display()
+	err = saverData(userNote)
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+}
+
+func getTodoData() string {
+	text := getUserInput("enter todo text: ")
+
+	return text
 }
 
 func getNoteData() (string, string) {
@@ -36,6 +62,15 @@ func getNoteData() (string, string) {
 
 }
 
+func saverData(data saver) error {
+	err := data.Save()
+	if err != nil {
+		fmt.Print(err)
+		return err
+	}
+	fmt.Println("File save successfully.")
+	return nil
+}
 func getUserInput(prompt string) string {
 	fmt.Print(prompt)
 
